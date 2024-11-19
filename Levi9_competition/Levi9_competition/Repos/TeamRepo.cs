@@ -32,6 +32,12 @@ namespace Levi9_competition.Repos
                 .Where(p => playerIds.Contains(p.Id)) 
                 .ToListAsync();
         }
+
+        public Task<bool> TeamExisist(string teamName)
+        {
+            return _context.Teams.AnyAsync(x => x.TeamName == teamName);
+        }
+
         public async Task<Team> UpdateAsync(Team teamModel)
         {
 

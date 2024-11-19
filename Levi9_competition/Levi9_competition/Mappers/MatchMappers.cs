@@ -9,6 +9,7 @@ namespace Levi9_competition.Mappers
         {
             return new Match
             {
+                Id = Guid.NewGuid().ToString(),
                 Team1Id = matchModel.Team1Id,
                 Team2Id = matchModel.Team2Id,
                 WinningTeamId = matchModel.WinningTeamId,

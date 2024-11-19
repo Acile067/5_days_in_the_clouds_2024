@@ -1,5 +1,6 @@
 ﻿using Levi9_competition.Dtos.Match;
 using Levi9_competition.Interfaces;
+using Levi9_competition.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Levi9_competition.Services
@@ -7,12 +8,12 @@ namespace Levi9_competition.Services
     public class MatchService
     {
         private readonly ITeamRepo _teamRepo;
-        private readonly IPlayerRepo _playerRepo;
+        private readonly IMatchRepo _matchRepo;
 
-        public MatchService(ITeamRepo teamRepo, IPlayerRepo playerRepo)
+        public MatchService(ITeamRepo teamRepo,  IMatchRepo matchRepo)
         {
             _teamRepo = teamRepo;
-            _playerRepo = playerRepo;
+            _matchRepo = matchRepo;
         }
         public async Task<bool> ProcessMatch(CreateMatchRequestDto matchModel)
         {
@@ -72,7 +73,9 @@ namespace Levi9_competition.Services
                 }
             }
 
-            // Sačuvaj promene u bazi
+            var match = matchModel.ToMatchFromCreateDTO();
+            await _matchRepo.CreateAsync(match);
+
             await _teamRepo.UpdateAsync(team1);
             await _teamRepo.UpdateAsync(team2);
 

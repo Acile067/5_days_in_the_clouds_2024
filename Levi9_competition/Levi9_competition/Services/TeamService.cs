@@ -16,6 +16,11 @@ namespace Levi9_competition.Services
 
         public async Task<Team> CreateTeamAsync(CreateTeamRequestDto teamDto)
         {
+            if (await _teamRepo.TeamExisist(teamDto.TeamName))
+            {
+                throw new ArgumentException("Team name is already taken.");
+            }
+
             var playerIds = teamDto.Players.ToList();
 
             var playersInDb = await _teamRepo.GetPlayersByGuidsAsync(playerIds);
@@ -23,6 +28,14 @@ namespace Levi9_competition.Services
             if (playersInDb.Count != 5)
             {
                 throw new ArgumentException("One or more players do not exist in the database.");
+            }
+
+            foreach (var player in playersInDb)
+            {
+                if(player.Team != null)
+                {
+                    throw new ArgumentException("One or more players are already in another team.");
+                }
             }
 
             var team = teamDto.ToTeamFromCreateDTO();
