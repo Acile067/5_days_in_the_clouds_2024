@@ -32,5 +32,27 @@ namespace Levi9_competition.Repos
         {
             return await _context.Players.ToListAsync();
         }
+        public async Task<Player> UpdateAsync(Player playerModel)
+        {
+            var player = await _context.Players.FirstOrDefaultAsync(x => x.Id == playerModel.Id);
+
+            if (player == null)
+            {
+                throw new ArgumentException("Player not found.");
+            }
+
+            player.Nickname = playerModel.Nickname;
+            player.Wins = playerModel.Wins;
+            player.Losses = playerModel.Losses;
+            player.Elo = playerModel.Elo;
+            player.HoursPlayed = playerModel.HoursPlayed;
+            player.Team = playerModel.Team;
+            player.RatingAdjustment = playerModel.RatingAdjustment;
+
+            _context.Players.Update(player);
+            await _context.SaveChangesAsync();
+
+            return player;
+        }
     }
 }

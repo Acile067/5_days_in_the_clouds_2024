@@ -21,6 +21,8 @@ builder.Services.AddDbContext<AppDbContext>(
 builder.Services.AddScoped<IPlayerRepo, PlayerRepo>();
 builder.Services.AddScoped<ITeamRepo, TeamRepo>();
 builder.Services.AddScoped<TeamService>();
+builder.Services.AddScoped<IMatchRepo, MatchRepo>();
+builder.Services.AddScoped<MatchService>();
 
 var app = builder.Build();
 

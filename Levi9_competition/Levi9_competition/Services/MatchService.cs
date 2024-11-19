@@ -1,0 +1,99 @@
+﻿using Levi9_competition.Dtos.Match;
+using Levi9_competition.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Levi9_competition.Services
+{
+    public class MatchService
+    {
+        private readonly ITeamRepo _teamRepo;
+        private readonly IPlayerRepo _playerRepo;
+
+        public MatchService(ITeamRepo teamRepo, IPlayerRepo playerRepo)
+        {
+            _teamRepo = teamRepo;
+            _playerRepo = playerRepo;
+        }
+        public async Task<bool> ProcessMatch(CreateMatchRequestDto matchModel)
+        {
+            if (matchModel.Duration < 1)
+                throw new ArgumentException("Duration must be at least 1 hour.");
+
+            var team1 = await _teamRepo.GetByIdAsync(matchModel.Team1Id);
+            var team2 = await _teamRepo.GetByIdAsync(matchModel.Team2Id);
+
+            if (team1 == null || team2 == null)
+                throw new ArgumentException("One or both teams do not exist.");
+
+            double team1AvgElo = team1.Players.Average(p => p.Elo);
+            double team2AvgElo = team2.Players.Average(p => p.Elo);
+
+            double team1Score = matchModel.WinningTeamId == matchModel.Team1Id ? 1 :
+                                matchModel.WinningTeamId == matchModel.Team2Id ? 0 : 0.5;
+            double team2Score = 1 - team1Score;
+
+            foreach (var player in team1.Players)
+            {
+                int newHoursPlayed = player.HoursPlayed + matchModel.Duration;
+                int k = CalculateK(newHoursPlayed);
+                double expectedScore = CalculateExpectedScore(player.Elo, team2AvgElo);
+                
+                player.HoursPlayed = newHoursPlayed;
+
+                if (team1Score == 1) 
+                { 
+                    player.Wins++;
+                    player.Elo = (int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k));
+                }
+                else if (team1Score == 0) 
+                { 
+                    player.Losses++;
+                    player.Elo = -(int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k));
+                }
+            }
+
+            foreach (var player in team2.Players)
+            {
+                int newHoursPlayed = player.HoursPlayed + matchModel.Duration;
+                int k = CalculateK(newHoursPlayed);
+                double expectedScore = CalculateExpectedScore(player.Elo, team1AvgElo);
+                
+                player.HoursPlayed = newHoursPlayed;
+
+                if (team2Score == 1) 
+                { 
+                    player.Wins++;
+                    player.Elo = (int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k));
+                }
+                else if (team2Score == 0) 
+                { 
+                    player.Losses++;
+                    player.Elo = -(int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k));
+                }
+            }
+
+            // Sačuvaj promene u bazi
+            await _teamRepo.UpdateAsync(team1);
+            await _teamRepo.UpdateAsync(team2);
+
+            return true;
+        }
+        private int CalculateK(int hoursPlayed)
+        {
+            if (hoursPlayed < 500) return 50;
+            if (hoursPlayed < 1000) return 40;
+            if (hoursPlayed < 3000) return 30;
+            if (hoursPlayed < 5000) return 20;
+            return 10;
+        }
+        private double CalculateExpectedScore(double r1, double r2)
+        {
+            return 1 / (1 + Math.Pow(10, (r2 - r1) / 400));
+        }
+
+        private double CalculateNewElo(double r1, double expected, double actual, int k)
+        {
+            return r1 + k * (actual - expected);
+        }
+    }
+}
