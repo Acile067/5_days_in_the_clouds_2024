@@ -16,17 +16,16 @@ namespace Levi9_competition.Mappers
                 Losses = playerModel.Losses,
                 Elo = playerModel.Elo,
                 HoursPlayed = playerModel.HoursPlayed,
-                Team = playerModel.Team,
+                TeamId = playerModel.Team,
                 RatingAdjustment = playerModel.RatingAdjustment
 
             };
         }
         public static Player ToPlayerFromCreateDTO(this CreatePlayerRequestDto playerDto)
         {
-            string id = Guid.NewGuid().ToString();
             return new Player
             {
-                Id = id,
+                Id = Guid.NewGuid().ToString(),
                 Nickname = playerDto.Nickname,
                 Wins = 0,
                 Losses = 0,

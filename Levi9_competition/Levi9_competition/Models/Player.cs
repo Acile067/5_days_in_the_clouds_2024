@@ -9,7 +9,7 @@
         public int Elo { get; set; }
         public int HoursPlayed { get; set; }
         public string? Team { get; set; }
-        public string? RatingAdjustment { get; set; }
+        public int? RatingAdjustment { get; set; }
 
     }
 }

@@ -28,5 +28,9 @@ namespace Levi9_competition.Repos
         {
             return _context.Players.AnyAsync(x => x.Nickname == nickname);
         }
+        public async Task<List<Player>> GetAllAsync()
+        {
+            return await _context.Players.ToListAsync();
+        }
     }
 }

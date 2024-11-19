@@ -7,5 +7,6 @@ namespace Levi9_competition.Interfaces
         Task<Player> CreateAsync(Player playerModel);
         Task<Player?> GetByIdAsync(string id);
         Task<bool> PlayerExisist(string nickname);
+        Task<List<Player>> GetAllAsync();
     }
 }

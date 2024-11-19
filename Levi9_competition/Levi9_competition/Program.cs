@@ -1,6 +1,7 @@
 using Levi9_competition.Data;
 using Levi9_competition.Interfaces;
 using Levi9_competition.Repos;
+using Levi9_competition.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,8 @@ builder.Services.AddDbContext<AppDbContext>(
 
 
 builder.Services.AddScoped<IPlayerRepo, PlayerRepo>();
+builder.Services.AddScoped<ITeamRepo, TeamRepo>();
+builder.Services.AddScoped<TeamService>();
 
 var app = builder.Build();
 

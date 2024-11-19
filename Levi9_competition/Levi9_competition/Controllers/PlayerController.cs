@@ -18,6 +18,18 @@ namespace Levi9_competition.Controllers
             _playerRepo = playerRepo;
             _context = context;
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var players = await _playerRepo.GetAllAsync();
+
+            var playersDto = players.Select(s => s.ToPlayerDto());
+
+            return Ok(playersDto);
+        }
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> Create([FromBody] CreatePlayerRequestDto playerDto)
@@ -34,7 +46,7 @@ namespace Levi9_competition.Controllers
 
             await _playerRepo.CreateAsync(playerModel);
 
-            return CreatedAtAction(nameof(GetById), new { id = playerModel.Id }, playerModel.ToPlayerDto());
+            return Ok(playerModel.ToPlayerDto());
         }
         [HttpGet]
         [Route("{id}")]
