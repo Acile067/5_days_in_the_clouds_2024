@@ -56,16 +56,17 @@ namespace Levi9_competition.Services
                 double expectedScore = CalculateExpectedScore(player.Elo, team2AvgElo);
                 
                 player.HoursPlayed = newHoursPlayed;
+                player.RatingAdjustment = k;
 
                 if (team1Score == 1) 
                 { 
                     player.Wins++;
-                    player.Elo = (int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k));
+                    player.Elo += Math.Abs((int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k)));
                 }
                 else if (team1Score == 0) 
                 { 
                     player.Losses++;
-                    player.Elo = -(int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k));
+                    player.Elo += -Math.Abs((int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k)));
                 }
             }
 
@@ -76,16 +77,17 @@ namespace Levi9_competition.Services
                 double expectedScore = CalculateExpectedScore(player.Elo, team1AvgElo);
                 
                 player.HoursPlayed = newHoursPlayed;
+                player.RatingAdjustment = k;
 
                 if (team2Score == 1) 
                 { 
                     player.Wins++;
-                    player.Elo = (int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k));
+                    player.Elo += Math.Abs((int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k)));
                 }
                 else if (team2Score == 0) 
                 { 
                     player.Losses++;
-                    player.Elo = -(int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k));
+                    player.Elo += -Math.Abs((int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k)));
                 }
             }
 
