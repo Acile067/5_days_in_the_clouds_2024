@@ -68,6 +68,10 @@ namespace Levi9_competition.Services
                     player.Losses++;
                     player.Elo += -Math.Abs((int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k)));
                 }
+                else
+                {
+                    player.Elo += Math.Abs((int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k)));
+                }
             }
 
             foreach (var player in team2.Players)
@@ -88,6 +92,10 @@ namespace Levi9_competition.Services
                 { 
                     player.Losses++;
                     player.Elo += -Math.Abs((int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k)));
+                }
+                else
+                {
+                    player.Elo += Math.Abs((int)Math.Round(CalculateNewElo(player.Elo, expectedScore, team1Score, k)));
                 }
             }
 
