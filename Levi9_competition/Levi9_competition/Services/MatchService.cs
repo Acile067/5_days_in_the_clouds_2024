@@ -44,7 +44,7 @@ namespace Levi9_competition.Services
 
             double team1AvgElo = team1.Players.Average(p => p.Elo);
             double team2AvgElo = team2.Players.Average(p => p.Elo);
-
+            
             double team1Score = matchModel.WinningTeamId == matchModel.Team1Id ? 1 :
                                 matchModel.WinningTeamId == matchModel.Team2Id ? 0 : 0.5;
             double team2Score = 1 - team1Score;
