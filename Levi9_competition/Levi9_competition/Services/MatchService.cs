@@ -20,6 +20,22 @@ namespace Levi9_competition.Services
             if (matchModel.Duration < 1)
                 throw new ArgumentException("Duration must be at least 1 hour.");
 
+            if (matchModel.Team1Id == matchModel.Team2Id)
+                throw new ArgumentException("Team1 and Team2 have same IDs.");
+
+            if (string.IsNullOrEmpty(matchModel.Team1Id) || string.IsNullOrEmpty(matchModel.Team2Id))
+            {
+                throw new ArgumentException("Team1Id and Team2Id must be valid.");
+            }
+
+            if (matchModel.WinningTeamId != null &&
+                matchModel.Team1Id != matchModel.WinningTeamId &&
+                matchModel.Team2Id != matchModel.WinningTeamId)
+            {
+                throw new ArgumentException("Invalid WinningTeamId.");
+            }
+
+
             var team1 = await _teamRepo.GetByIdAsync(matchModel.Team1Id);
             var team2 = await _teamRepo.GetByIdAsync(matchModel.Team2Id);
 
