@@ -329,5 +329,5 @@ dotnet test
 ```
 
 ```yaml
-Test summary: total: 6, failed: 0, succeeded: 6, skipped: 0, duration: 2.9s
+Test summary: total: 11, failed: 0, succeeded: 11, skipped: 0, duration: 3.0s
 ```
