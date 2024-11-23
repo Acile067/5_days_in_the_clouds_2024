@@ -9,6 +9,7 @@ namespace Levi9_competition.Interfaces
         Task<bool> PlayerExisist(string nickname);
         Task<List<Player>> GetAllAsync();
         Task<Player> UpdateAsync(Player playerModel);
+        Task DeleteAllAsync();
         Task UpdateRangeAsync(IEnumerable<Player> players);
     }
 }

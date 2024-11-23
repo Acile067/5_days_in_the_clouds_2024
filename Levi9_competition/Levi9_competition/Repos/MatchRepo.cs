@@ -18,5 +18,12 @@ namespace Levi9_competition.Repos
             await _context.SaveChangesAsync();
             return matchModel;
         }
+
+        public async Task DeleteAllAsync()
+        {
+            var data = await _context.Teams.ToListAsync();
+            _context.RemoveRange(data);
+            await _context.SaveChangesAsync();
+        }
     }
 }

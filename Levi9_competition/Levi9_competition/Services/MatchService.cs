@@ -3,6 +3,7 @@ using Levi9_competition.Interfaces;
 using Levi9_competition.Mappers;
 using Levi9_competition.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
 
 namespace Levi9_competition.Services
 {
@@ -79,7 +80,6 @@ namespace Levi9_competition.Services
                 int k = CalculateK(player.HoursPlayed);
 
                 player.Elo = (int)Math.Round(player.Elo + k * (score - expectedScore));
-
                 player.HoursPlayed += duration;
 
                 int k2 = CalculateK(player.HoursPlayed);
