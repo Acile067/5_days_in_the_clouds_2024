@@ -1,3 +1,4 @@
+using Amazon.DynamoDBv2;
 using Levi9_competition.Data;
 using Levi9_competition.Interfaces;
 using Levi9_competition.Repos;
@@ -13,12 +14,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<IAmazonDynamoDB>(sp =>
+    new AmazonDynamoDBClient(
+        "key",
+        "secret",
+        Amazon.RegionEndpoint.EUCentral1));
+
 builder.Services.AddDbContext<AppDbContext>(
         options => options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("MyLeviDb"))
 );
 
 
 builder.Services.AddScoped<IPlayerRepo, PlayerRepo>();
+builder.Services.AddScoped<PlayerService>();
 builder.Services.AddScoped<ITeamRepo, TeamRepo>();
 builder.Services.AddScoped<TeamService>();
 builder.Services.AddScoped<IMatchRepo, MatchRepo>();

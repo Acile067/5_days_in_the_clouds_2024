@@ -5,5 +5,6 @@ namespace Levi9_competition.Interfaces
     public interface IMatchRepo
     {
         Task<Match> CreateAsync(Match matchModel);
+        Task DeleteAllAsync();
     }
 }
