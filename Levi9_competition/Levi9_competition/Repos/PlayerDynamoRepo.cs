@@ -10,7 +10,6 @@ namespace Levi9_competition.Repos
     public class PlayerDynamoRepo : IPlayerRepo
     {
         private readonly DynamoDBContext _context;
-        private const string TableName = "Players";
 
         public PlayerDynamoRepo(IAmazonDynamoDB dynamoDbClient)
         {
