@@ -77,13 +77,13 @@ namespace Levi9_competition.Services
             foreach (var player in players)
             {
                 double expectedScore = CalculateExpectedScore(player.Elo, opponentElo);
-                int k = CalculateK(player.HoursPlayed);
-
-                player.Elo = (int)Math.Round(player.Elo + k * (score - expectedScore));
                 player.HoursPlayed += duration;
-
+                int k = CalculateK(player.HoursPlayed);
                 int k2 = CalculateK(player.HoursPlayed);
                 player.RatingAdjustment = k2;
+
+                player.Elo = (int)Math.Round(player.Elo + k * (score - expectedScore));
+
 
                 if (score == 1)
                 {
