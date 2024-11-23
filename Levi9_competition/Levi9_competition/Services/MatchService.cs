@@ -39,6 +39,9 @@ namespace Levi9_competition.Services
             if (team1 == null || team2 == null)
                 throw new ArgumentException("One or both teams do not exist.");
 
+            if(team1.Players.Count() != team2.Players.Count())
+                throw new ArgumentException("Teams are not same size.");
+
             double team1AvgElo = CalculateTeamELO(team1.Players);
             double team2AvgElo = CalculateTeamELO(team2.Players);
 
@@ -46,23 +49,32 @@ namespace Levi9_competition.Services
 
             if (isDraw)
             {
-                UpdateTeamPlayers(team1.Players, 0.5, matchModel.Duration, team2AvgElo);
-                UpdateTeamPlayers(team2.Players, 0.5, matchModel.Duration, team1AvgElo);
+                UpdateTeamPlayers(team1.Players, 0.5, matchModel.Duration, team2AvgElo, team1.TempTeam);
+                UpdateTeamPlayers(team2.Players, 0.5, matchModel.Duration, team1AvgElo, team2.TempTeam);
             }
             else
             {
                 double team1Score = matchModel.WinningTeamId == matchModel.Team1Id ? 1 : 0;
                 double team2Score = 1 - team1Score;
 
-                UpdateTeamPlayers(team1.Players, team1Score, matchModel.Duration, team2AvgElo);
-                UpdateTeamPlayers(team2.Players, team2Score, matchModel.Duration, team1AvgElo);
+                UpdateTeamPlayers(team1.Players, team1Score, matchModel.Duration, team2AvgElo, team1.TempTeam);
+                UpdateTeamPlayers(team2.Players, team2Score, matchModel.Duration, team1AvgElo, team2.TempTeam);
             }
+
+            
 
             var match = matchModel.ToMatchFromCreateDTO();
             await _matchRepo.CreateAsync(match);
 
             await _teamRepo.UpdateAsync(team1);
             await _teamRepo.UpdateAsync(team2);
+
+
+            if (team1.TempTeam && team2.TempTeam)
+            {
+                await _teamRepo.RemoveAtId(team1.Id);
+                await _teamRepo.RemoveAtId(team2.Id);
+            }
 
             return true;
         }
@@ -72,7 +84,7 @@ namespace Levi9_competition.Services
             return players.Average(player => player.Elo);
         }
 
-        private void UpdateTeamPlayers(IEnumerable<Player> players, double score, int duration, double opponentElo)
+        private void UpdateTeamPlayers(IEnumerable<Player> players, double score, int duration, double opponentElo, bool tempTeam)
         {
             foreach (var player in players)
             {
@@ -83,6 +95,11 @@ namespace Levi9_competition.Services
                 player.RatingAdjustment = k2;
 
                 player.Elo = (int)Math.Round(player.Elo + k * (score - expectedScore));
+
+                if(tempTeam)
+                {
+                    player.Team = null;
+                }
 
 
                 if (score == 1)
@@ -95,7 +112,7 @@ namespace Levi9_competition.Services
                 }
             }
         }
-        private int CalculateK(int hoursPlayed)
+        public int CalculateK(int hoursPlayed)
         {
             if (hoursPlayed < 500) return 50;
             if (hoursPlayed < 1000) return 40;

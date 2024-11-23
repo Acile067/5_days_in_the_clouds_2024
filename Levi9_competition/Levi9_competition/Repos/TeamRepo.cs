@@ -82,5 +82,31 @@ namespace Levi9_competition.Repos
             _context.RemoveRange(data);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> RemoveAtId(string id)
+        {
+            var team = await _context.Teams
+                .Include(t => t.Players) // Include players to update their Team reference
+                .FirstOrDefaultAsync(t => t.Id.ToLower() == id.ToLower());
+
+            if (team == null)
+            {
+                return false; // Team not found
+            }
+
+            // Remove the team's reference from its players
+            foreach (var player in team.Players)
+            {
+                player.Team = null; // Set Team reference to null
+            }
+
+            // Remove the team
+            _context.Teams.Remove(team);
+
+            // Save changes
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

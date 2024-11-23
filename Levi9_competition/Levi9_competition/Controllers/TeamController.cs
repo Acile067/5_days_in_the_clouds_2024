@@ -13,12 +13,16 @@ namespace Levi9_competition.Controllers
     public class TeamController : ControllerBase
     {
         private readonly TeamService _teamService;
+        private readonly MatchService _matchService;
         private readonly IPlayerRepo _playerRepo;
+        private readonly ITeamRepo _teamRepo;
 
-        public TeamController(TeamService teamService, IPlayerRepo playerRepo)
+        public TeamController(TeamService teamService, IPlayerRepo playerRepo, ITeamRepo teamRepo, MatchService matchService)
         {
             _teamService = teamService;
             _playerRepo = playerRepo;
+            _teamRepo = teamRepo;
+            _matchService = matchService;
         }
 
         [HttpPost]
@@ -138,11 +142,13 @@ namespace Levi9_competition.Controllers
                 foreach (var player in team1Players)
                 {
                     player.Team = team1.Id;
+                    player.RatingAdjustment = _matchService.CalculateK(player.HoursPlayed);
                 }
 
                 foreach (var player in team2Players)
                 {
                     player.Team = team2.Id;
+                    player.RatingAdjustment = _matchService.CalculateK(player.HoursPlayed);
                 }
 
                 var response = new[]
@@ -160,7 +166,7 @@ namespace Levi9_competition.Controllers
                             p.Elo,
                             p.HoursPlayed,
                             TeamId = p.Team,
-                            RatingAdjustment = 50 // Example value
+                            p.RatingAdjustment
                         })
                     },
                     new
@@ -176,10 +182,15 @@ namespace Levi9_competition.Controllers
                             p.Elo,
                             p.HoursPlayed,
                             TeamId = p.Team,
-                            RatingAdjustment = 50 // Example value
+                            p.RatingAdjustment
                        })
                     }
                 };
+
+                await _teamRepo.CreateAsync(team1);
+
+                await _teamRepo.CreateAsync(team2);
+
 
                 return Ok(response);
             }
@@ -188,5 +199,7 @@ namespace Levi9_competition.Controllers
                 return StatusCode(500, "An error occurred while generating teams.");
             }
         }
+
+
     }
 }

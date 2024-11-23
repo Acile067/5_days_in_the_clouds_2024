@@ -73,5 +73,10 @@ namespace Levi9_competition.Repos
             var search = _context.ScanAsync<Team>(scanConditions);
             return await search.GetRemainingAsync();
         }
+
+        public Task<bool> RemoveAtId(string id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

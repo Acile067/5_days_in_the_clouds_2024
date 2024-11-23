@@ -10,5 +10,6 @@ namespace Levi9_competition.Interfaces
         Task<Team> UpdateAsync(Team teamModel);
         Task<bool> TeamExisist(string teamName);
         Task DeleteAllAsync();
+        Task<bool> RemoveAtId(string id);
     }
 }
