@@ -54,5 +54,17 @@ namespace Levi9_competition.Repos
 
             return player;
         }
+        public async Task UpdateRangeAsync(IEnumerable<Player> players)
+        {
+            // Proverava da li lista nije prazna
+            if (players == null || !players.Any())
+                throw new ArgumentException("The player list cannot be null or empty.");
+
+            // Ažurava entitete u DbContext
+            _context.Players.UpdateRange(players);
+
+            // Čuva promene u bazi
+            await _context.SaveChangesAsync();
+        }
     }
 }
