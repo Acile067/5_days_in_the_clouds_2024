@@ -12,13 +12,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddDbContext<AppDbContext>(
         options => options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("MyLeviDb"))
 );
 
 
 builder.Services.AddScoped<IPlayerRepo, PlayerRepo>();
+builder.Services.AddScoped<PlayerService>();
 builder.Services.AddScoped<ITeamRepo, TeamRepo>();
 builder.Services.AddScoped<TeamService>();
 builder.Services.AddScoped<IMatchRepo, MatchRepo>();

@@ -2,6 +2,7 @@
 using Levi9_competition.Dtos.Player;
 using Levi9_competition.Interfaces;
 using Levi9_competition.Mappers;
+using Levi9_competition.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,9 +14,11 @@ namespace Levi9_competition.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IPlayerRepo _playerRepo;
-        public PlayerController(AppDbContext context, IPlayerRepo playerRepo)
+        private readonly PlayerService _playerService;
+        public PlayerController(AppDbContext context, IPlayerRepo playerRepo, PlayerService playerService)
         {
             _playerRepo = playerRepo;
+            _playerService = playerService;
             _context = context;
         }
         [HttpGet]
@@ -64,6 +67,33 @@ namespace Levi9_competition.Controllers
 
             return Ok(player.ToPlayerDto());
         }
-        
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAllData()
+        {
+            await _playerService.DeleteAllDataAsync();
+            return NoContent();
+        }
+
+        [HttpPut]
+        [Route("{player_id}/leave_team")]
+        public async Task<IActionResult> LeaveTeam([FromRoute] string player_id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var player = await _playerRepo.GetByIdAsync(player_id);
+
+            if (player == null)
+            {
+                return NotFound("Player not found");
+            }
+
+            player.Team = null;
+
+            await _playerRepo.UpdateAsync(player);
+
+            return Ok(player.ToPlayerDto());
+        }
+
     }
 }

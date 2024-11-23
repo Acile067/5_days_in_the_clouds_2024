@@ -54,5 +54,11 @@ namespace Levi9_competition.Repos
 
             return player;
         }
+        public async Task DeleteAllAsync()
+        {
+            var data = await _context.Players.ToListAsync();
+            _context.RemoveRange(data);
+            await _context.SaveChangesAsync();
+        }
     }
 }
