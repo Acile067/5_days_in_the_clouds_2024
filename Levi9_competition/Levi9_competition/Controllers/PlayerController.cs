@@ -68,7 +68,7 @@ namespace Levi9_competition.Controllers
         public async Task<IActionResult> DeleteAllData()
         {
             await _playerService.DeleteAllDataAsync();
-            return NoContent();
+            return Ok();
         }
 
         [HttpPut]
