@@ -11,5 +11,7 @@ namespace Levi9_competition.Models
         public string TeamName { get; set; } = string.Empty;
         [DynamoDBProperty]
         public List<Player> Players { get; set; } = new List<Player>();
+        [DynamoDBProperty]
+        public bool TempTeam { get; set; } = false;
     }
 }

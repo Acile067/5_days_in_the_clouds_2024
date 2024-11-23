@@ -61,5 +61,10 @@ namespace Levi9_competition.Repos
                 await _context.DeleteAsync(player);
             }
         }
+
+        public Task UpdateRangeAsync(IEnumerable<Player> players)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

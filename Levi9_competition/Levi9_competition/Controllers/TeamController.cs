@@ -86,46 +86,36 @@ namespace Levi9_competition.Controllers
                 var team1Players = new List<Player>();
                 var team2Players = new List<Player>();
 
-                if (teamSize == 1)
+                if (teamSize % 2 == 0)
                 {
-                    // Special case: Team size of 1
-                    team1Players.Add(eligiblePlayers[0]); // Add first player to team1
-                    team2Players.Add(eligiblePlayers[1]); // Add second player to team2
+                    // For even N: Distribute players in pairs, alternating between teams
+                    for (int i = 0; i < teamSize; i++)
+                    {
+                        if (i % 2 == 0)
+                        {
+                            team1Players.Add(eligiblePlayers[i]);
+                            team1Players.Add(eligiblePlayers[2 * teamSize - i - 1]);
+                        }
+                        else
+                        {
+                            team2Players.Add(eligiblePlayers[i]);
+                            team2Players.Add(eligiblePlayers[2 * teamSize - i - 1]);
+                        }
+                    }
                 }
-                else if(teamSize % 2 == 0)
+                else
                 {
+                    // For odd N: Distribute players in pairs, and then handle the middle player
                     for (int i = 0; i < teamSize / 2; i++)
                     {
-                        // First team gets the first and last players
                         team1Players.Add(eligiblePlayers[i]);
                         team1Players.Add(eligiblePlayers[2 * teamSize - i - 1]);
-
-                        // Second team gets the next two players
-                        if (i + 1 < teamSize)
-                        {
-                            team2Players.Add(eligiblePlayers[i + 1]);
-                            team2Players.Add(eligiblePlayers[2 * teamSize - i - 2]);
-                        }
-                    }
-                }
-                else if(teamSize % 2 == 1)
-                {
-                    for (int i = 0; i < teamSize / 2; i++)
-                    {
-                        // First team gets the first and last players
-                        team1Players.Add(eligiblePlayers[i]);
-                        team2Players.Add(eligiblePlayers[2 * teamSize - i - 1]);
-
-                        // Second team gets the next two players
-                        if (i + 1 < teamSize)
-                        {
-                            team1Players.Add(eligiblePlayers[i + 1]);
-                            team2Players.Add(eligiblePlayers[2 * teamSize - i - 2]);
-                        }
+                        team1Players.Add(eligiblePlayers[i + 1]);
+                        team2Players.Add(eligiblePlayers[2 * teamSize - i - 2]);
                     }
 
-                    // After distributing half, handle the middle players for odd team sizes
-                    team1Players.Add(eligiblePlayers[teamSize - 1]);  // Add the N-th player to team1
+                    // Add the middle players for odd team sizes
+                    team1Players.Add(eligiblePlayers[teamSize - 1]);
                     team2Players.Add(eligiblePlayers[teamSize]);
                 }
 
@@ -133,14 +123,16 @@ namespace Levi9_competition.Controllers
                 {
                     Id = Guid.NewGuid().ToString(),
                     TeamName = Guid.NewGuid().ToString(),
-                    Players = team1Players
+                    Players = team1Players,
+                    TempTeam = true
                 };
 
                 Team team2 = new Team
                 {
                     Id = Guid.NewGuid().ToString(),
                     TeamName = Guid.NewGuid().ToString(),
-                    Players = team2Players
+                    Players = team2Players,
+                    TempTeam = true
                 };
 
                 foreach (var player in team1Players)
@@ -153,15 +145,43 @@ namespace Levi9_competition.Controllers
                     player.Team = team2.Id;
                 }
 
-                // Save team assignments to the database
-                await _playerRepo.UpdateRangeAsync(eligiblePlayers);
-
-                // Return the formed teams
-                return Ok(new
+                var response = new[]
                 {
-                    Team1 = team1,
-                    Team2 = team2
-                });
+                    new
+                    {
+                        team1.Id,
+                        team1.TeamName,
+                        Players = team1.Players.Select(p => new
+                        {
+                            p.Id,
+                            p.Nickname,
+                            p.Wins,
+                            p.Losses,
+                            p.Elo,
+                            p.HoursPlayed,
+                            TeamId = p.Team,
+                            RatingAdjustment = 50 // Example value
+                        })
+                    },
+                    new
+                    {
+                        team2.Id,
+                        team2.TeamName,
+                        Players = team2.Players.Select(p => new
+                        {
+                            p.Id,
+                            p.Nickname,
+                            p.Wins,
+                            p.Losses,
+                            p.Elo,
+                            p.HoursPlayed,
+                            TeamId = p.Team,
+                            RatingAdjustment = 50 // Example value
+                       })
+                    }
+                };
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
