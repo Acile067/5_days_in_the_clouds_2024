@@ -2,7 +2,7 @@
 
 namespace Levi9_competition.Models
 {
-    [DynamoDBTable("Teams")]
+    [DynamoDBTable("tableTeams")]
     public class Team
     {
         [DynamoDBHashKey]

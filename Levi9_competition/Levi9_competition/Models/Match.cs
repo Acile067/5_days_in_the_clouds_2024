@@ -2,7 +2,7 @@
 
 namespace Levi9_competition.Models
 {
-    [DynamoDBTable("Matches")]
+    [DynamoDBTable("tableMatches")]
     public class Match
     {
         [DynamoDBHashKey]
