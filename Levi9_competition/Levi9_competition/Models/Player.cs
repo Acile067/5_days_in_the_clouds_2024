@@ -1,6 +1,7 @@
 ﻿namespace Levi9_competition.Models
 {
     using Amazon.DynamoDBv2.DataModel;
+    [DynamoDBTable("tablePlayers")]
     public class Player
     {
         [DynamoDBHashKey]
