@@ -1,6 +1,5 @@
 ﻿using Levi9_competition.Data;
 using Levi9_competition.Dtos.Player;
-using Levi9_competition.Interfaces;
 using Levi9_competition.Mappers;
 using Levi9_competition.Services;
 using Microsoft.AspNetCore.Http;
@@ -13,11 +12,9 @@ namespace Levi9_competition.Controllers
     public class PlayerController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IPlayerRepo _playerRepo;
         private readonly PlayerService _playerService;
-        public PlayerController(AppDbContext context, IPlayerRepo playerRepo, PlayerService playerService)
+        public PlayerController(AppDbContext context, PlayerService playerService)
         {
-            _playerRepo = playerRepo;
             _playerService = playerService;
             _context = context;
         }
@@ -27,7 +24,7 @@ namespace Levi9_competition.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var players = await _playerRepo.GetAllAsync();
+            var players = await _playerService.GetAllAsync();
 
             var playersDto = players.Select(s => s.ToPlayerDto());
 
@@ -40,14 +37,14 @@ namespace Levi9_competition.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (await _playerRepo.PlayerExisist(playerDto.Nickname))
+            if (await _playerService.PlayerExisist(playerDto.Nickname))
             {
                 return BadRequest("Player already exists");
             }
 
             var playerModel = playerDto.ToPlayerFromCreateDTO();
 
-            await _playerRepo.CreateAsync(playerModel);
+            await _playerService.CreateAsync(playerModel);
 
             return Ok(playerModel.ToPlayerDto());
         }
@@ -58,7 +55,7 @@ namespace Levi9_competition.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var player = await _playerRepo.GetByIdAsync(id);
+            var player = await _playerService.GetByIdAsync(id);
 
             if (player == null)
             {
@@ -81,7 +78,7 @@ namespace Levi9_competition.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var player = await _playerRepo.GetByIdAsync(player_id);
+            var player = await _playerService.GetByIdAsync(player_id);
 
             if (player == null)
             {
@@ -90,7 +87,7 @@ namespace Levi9_competition.Controllers
 
             player.Team = null;
 
-            await _playerRepo.UpdateAsync(player);
+            await _playerService.UpdateAsync(player);
 
             return Ok(player.ToPlayerDto());
         }
